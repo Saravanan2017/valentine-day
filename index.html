@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Gift for You 🌹</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff0a54;
+            --gold: #ffbd00;
+            --glass: rgba(10, 0, 0, 0.9);
+            --remo-blue: #00d2ff;
+        }
+
+        body, html {
+            margin: 0; padding: 0; min-height: 100%; width: 100%;
+            background: #000;
+            background-image: radial-gradient(circle, #2b0010 0%, #000000 100%);
+            color: white; font-family: 'Montserrat', sans-serif;
+            display: flex; justify-content: center; align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* Ambient Petals */
+        .petal { position: fixed; pointer-events: none; z-index: 5; animation: fall linear forwards; }
+        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+
+        /* The Initial Gift Box */
+        #gift-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 1000; display: flex;
+            flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 1s ease;
+            text-align: center;
+        }
+
+        .shaking-box { font-size: 100px; cursor: pointer; animation: shake 0.6s infinite; filter: drop-shadow(0 0 20px var(--primary)); }
+        @keyframes shake { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(10deg); } 75% { transform: rotate(-10deg); } }
+
+        /* Music Toggle */
+        #music-control {
+            position: fixed; bottom: 20px; left: 20px; z-index: 1001;
+            cursor: pointer; font-size: 1.2rem; background: rgba(255,10,84,0.3);
+            padding: 12px; border-radius: 50%; border: 1px solid var(--primary);
+            display: none; transition: 0.3s;
+        }
+
+        /* Countdown */
+        .countdown-ribbon {
+            position: fixed; top: 20px; right: 20px;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(10px);
+            padding: 10px 20px; border-radius: 50px;
+            border: 1px solid var(--gold); color: var(--gold);
+            font-size: 0.8rem; font-weight: 600; z-index: 100;
+        }
+
+        /* Main Container */
+        .container {
+            position: relative; z-index: 10; width: 90%; max-width: 450px;
+            background: var(--glass); backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px; padding: 30px 20px; text-align: center;
+            box-shadow: 0 0 50px rgba(255, 10, 84, 0.4);
+            display: none; margin: 20px;
+        }
+
+        h1 { font-family: 'Dancing Script', cursive; font-size: 3rem; color: var(--primary); margin: 0; text-shadow: 0 0 15px rgba(255,10,84,0.5); }
+        
+        .step { display: none; }
+        .step.active { display: block; animation: zoomIn 0.5s ease; }
+
+        input {
+            background: transparent; border: none; border-bottom: 2px solid var(--primary);
+            color: white; padding: 12px; width: 80%; text-align: center;
+            font-size: 1.2rem; outline: none; margin: 20px 0;
+        }
+
+        .btn-wrap { position: relative; height: 100px; margin-top: 20px; display: flex; justify-content: center; gap: 15px; }
+
+        button { background: var(--primary); color: white; border: none; padding: 12px 30px; border-radius: 50px; cursor: pointer; font-weight: 600; transition: 0.3s; box-shadow: 0 5px 15px rgba(255,10,84,0.3); }
+        button:hover { transform: scale(1.05); background: #ff4d8d; }
+
+        /* Photo Gallery */
+        .gallery { display: flex; justify-content: center; gap: 10px; margin: 20px 0; }
+        .polaroid {
+            width: 80px; height: 100px; background: white; padding: 5px 5px 15px 5px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5); transform: rotate(-5deg);
+            transition: 0.5s;
+        }
+        .polaroid:nth-child(2) { transform: rotate(5deg); margin-top: -10px; }
+        .polaroid img { width: 100%; height: 80px; object-fit: cover; }
+        .polaroid:hover { transform: scale(2) rotate(0deg); z-index: 50; }
+
+        .quotes-list { text-align: left; margin-top: 20px; max-height: 250px; overflow-y: auto; padding: 10px; scrollbar-width: thin; }
+        .quote-item { font-style: italic; font-size: 0.95rem; margin-bottom: 15px; border-left: 3px solid var(--gold); padding-left: 15px; opacity: 0; animation: fadeInRight 0.5s forwards; }
+
+        #wa-btn { background: #25d366; display: none; margin-top: 20px; width: 100%; animation: bounce 2s infinite; }
+
+        @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes fadeInRight { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} }
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic" loop>
+        <source src="sirikadhey.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="music-control" onclick="toggleMusic()">🎵</div>
+
+    <div id="gift-overlay" onclick="burstBox()">
+        <div class="shaking-box">🎁</div>
+        <h2 style="color: var(--gold); font-family: 'Dancing Script'; font-size: 2rem;">A gift for the most beautiful girl...</h2>
+        <p style="letter-spacing: 2px; opacity: 0.8;">(Tap the Gift to Open)</p>
+    </div>
+
+    <div class="countdown-ribbon" id="countdown">Loading...</div>
+
+    <div class="container" id="main-ui">
+        <div class="step active" id="step1">
+            <h1>Sirikkadhey...</h1>
+            <p>You unlocked the gift! Tell me your name, princess.</p>
+            <input type="text" id="userName" placeholder="Your Name">
+            <div class="btn-wrap">
+                <button onclick="startQuest()">Start Journey</button>
+            </div>
+        </div>
+
+        <div class="step" id="step2">
+            <h2 id="questionHeading" style="min-height: 80px; font-family: 'Dancing Script'; font-size: 1.8rem;">Question?</h2>
+            <div class="btn-wrap">
+                <button onclick="nextQuestion()">Yes</button>
+                <button id="no-btn-quest" onmouseover="dodge()">No</button>
+            </div>
+        </div>
+
+        <div class="step" id="step3">
+            <h1>For You, <span id="displayName" style="color:var(--gold)"></span></h1>
+            
+            <div class="gallery">
+                <div class="polaroid"><img src="https://via.placeholder.com/150/ff0a54/ffffff?text=Us+1" alt="Photo 1"></div>
+                <div class="polaroid"><img src="https://via.placeholder.com/150/ff0a54/ffffff?text=Us+2" alt="Photo 2"></div>
+                <div class="polaroid"><img src="https://via.placeholder.com/150/ff0a54/ffffff?text=Us+3" alt="Photo 3"></div>
+            </div>
+
+            <div class="quotes-list" id="quotesContainer"></div>
+            <button id="wa-btn" onclick="sendWhatsApp()">Accept My Love ❤️</button>
+        </div>
+    </div>
+
+    <script>
+        let currentQ = 0;
+        let userName = "";
+        const questQuestions = [
+            "Do you know you're the most wonderful person I've met?",
+            "Can we make a promise to always be there for each other?",
+            "Are you ready for a world filled with rose petals and love?",
+            "Do you feel the magic of this song right now?",
+            "Finally... will you be my Valentine?"
+        ];
+
+        function toggleMusic() {
+            const music = document.getElementById('bgMusic');
+            const icon = document.getElementById('music-control');
+            if (music.paused) {
+                music.play();
+                icon.innerText = "🎵";
+            } else {
+                music.pause();
+                icon.innerText = "🔇";
+            }
+        }
+
+        function burstBox() {
+            // Start Music
+            const music = document.getElementById('bgMusic');
+            music.play().catch(e => console.log("Audio play blocked by browser"));
+            document.getElementById('music-control').style.display = 'block';
+
+            // UI Transition
+            document.getElementById('gift-overlay').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('gift-overlay').style.display = 'none';
+                document.getElementById('main-ui').style.display = 'block';
+            }, 1000);
+            startPetals();
+        }
+
+        function updateTimer() {
+            const now = new Date();
+            const target = new Date(now.getFullYear(), 1, 14);
+            if (now > target) target.setFullYear(target.getFullYear() + 1);
+            const diff = target - now;
+            const h = Math.floor(diff / (1000 * 60 * 60));
+            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((diff % (1000 * 60)) / 1000);
+            document.getElementById('countdown').innerText = `⏳ ${h}h ${m}m ${s}s UNTIL V-DAY`;
+        }
+        setInterval(updateTimer, 1000);
+
+        function startQuest() {
+            userName = document.getElementById('userName').value.trim();
+            if(!userName) return alert("Please enter your name, princess!");
+            showStep(2);
+            updateQuestionText();
+        }
+
+        function showStep(n) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById('step' + n).classList.add('active');
+        }
+
+        function updateQuestionText() {
+            document.getElementById('questionHeading').innerText = questQuestions[currentQ];
+        }
+
+        function nextQuestion() {
+            if(currentQ < 4) {
+                currentQ++;
+                updateQuestionText();
+            } else {
+                revealFinal();
+            }
+        }
+
+        function dodge() {
+            if(currentQ >= 3) {
+                const btn = document.getElementById('no-btn-quest');
+                btn.style.position = 'absolute';
+                btn.style.left = Math.random() * 80 + '%';
+                btn.style.top = Math.random() * 80 + '%';
+            }
+        }
+
+        function revealFinal() {
+            document.getElementById('displayName').innerText = userName;
+            showStep(3);
+            const quotes = [
+                `${userName}, your smile is my favorite song.`,
+                `Sirikkadhey... because my heart skips a beat.`,
+                `Every day with ${userName} is a Remo-level romance.`,
+                `${userName}, I'll always be your biggest fan.`,
+                `My heart beats only for you, ${userName}.`,
+                `To the world you are one, but to me you are the world.`,
+                `${userName}, thank you for coming into my life.`,
+                `I found my home in your heart.`,
+                `You are the melody to my life's lyrics.`,
+                `${userName}, let's write our own forever story.`,
+                `No distance is too far if I'm with you.`,
+                `${userName}, you make every moment magical.`,
+                `My favorite adventure is loving you.`,
+                `You are the 'Yes' to all my prayers.`,
+                `${userName}, you are my forever Valentine.`
+            ];
+            const container = document.getElementById('quotesContainer');
+            quotes.forEach((text, i) => {
+                setTimeout(() => {
+                    const div = document.createElement('div');
+                    div.className = 'quote-item';
+                    div.innerText = text;
+                    container.appendChild(div);
+                    container.scrollTop = container.scrollHeight;
+                    if(i === 14) document.getElementById('wa-btn').style.display = 'block';
+                }, i * 600);
+            });
+        }
+
+        function sendWhatsApp() {
+            const phone = "8122977830"; // CHANGE TO YOUR NUMBER
+            const msg = encodeURIComponent(`Sirikkadhey! ❤️ It's ${userName}. I opened the gift, and it's beautiful. YES! 🌹`);
+            window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+        }
+
+        function startPetals() {
+            setInterval(() => {
+                const p = document.createElement('div');
+                p.className = 'petal';
+                p.innerHTML = ['🌹', '❤️', '💖', '✨'][Math.floor(Math.random()*4)];
+                p.style.left = Math.random() * 100 + 'vw';
+                p.style.top = '-50px';
+                p.style.fontSize = Math.random() * 20 + 15 + 'px';
+                p.style.animationDuration = Math.random() * 3 + 4 + 's';
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 7000);
+            }, 350);
+        }
+    </script>
+</body>
+</html>
